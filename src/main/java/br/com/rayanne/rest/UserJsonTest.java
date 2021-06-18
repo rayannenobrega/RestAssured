@@ -11,6 +11,8 @@ import org.junit.Test;
 
 import io.restassured.response.Response;
 
+import java.util.Arrays;
+
 public class UserJsonTest {
 
     @Test
@@ -82,4 +84,19 @@ public class UserJsonTest {
        ;
    }
 
+   @Test
+    public void deveVerificarListaRaiz(){
+       given()
+       .when()
+               .get("https://restapi.wcaquino.me/users")
+       .then()
+               .statusCode(200)
+               .body("$", hasSize(3))
+               .body("name", hasItems("João da Silva", "Maria Joaquina","Ana Júlia")) //Devolve uma coleção com todos os nomes
+               .body("age[1]", is(25))
+               .body("filhos.name", hasItem(Arrays.asList("Zezinho", "Luizinho")))
+               .body("salary", contains(1234.5678f, 2500, null))
+       ;
+
+   }
 }
