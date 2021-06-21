@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import io.restassured.response.Response;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class UserJsonTest {
@@ -125,5 +126,23 @@ public class UserJsonTest {
                .body("salary.findAll{it != null}.sum()", is(closeTo(3734.5678f, 0.001))) //quando se possui um dos elementos vazios é preciso colocar um filtro antes de pedir a somatória
                .body("salary.findAll{it != null}.sum()", allOf(greaterThan(3000d), lessThan(5000d)))
        ;
+   }
+
+   //Manter uma consulta como o nível abaixo é mais fácil de ser entendido. Acima podemos ver métodos muito complexos. Da forma abaixo, apesar de ficar mais verboso
+    //Por precisar jogar em um arraylist no java, pode ser melhor compreendido de uma forma geral.
+   @Test
+    public void devoUnirJsonPathComJava(){
+       ArrayList<String> names =
+           given()
+           .when()
+                   .get("https://restapi.wcaquino.me/users")
+           .then()
+                   .statusCode(200)
+                   .extract().path("name.findAll{it.startsWith('Maria')}")
+       ;
+
+       Assert.assertEquals(1,names.size());
+       Assert.assertTrue(names.get(0).equalsIgnoreCase("Maria Joaquina"));
+       Assert.assertEquals(names.get(0).toUpperCase(), "maria joaquina".toUpperCase());
    }
 }
