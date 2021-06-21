@@ -31,10 +31,24 @@ public class UserXMLTest {
        // RestAssured.port = 80;
        // RestAssured.basePath = "/v2";
 
-
+        // Para trabalhar com requisições temos que instanciar o objeto da classe RequestSpecBuilder
         RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+
+        // Após instanciado, vamos fazer o que queremos com a nossa request antes de finalizá-la e montá-la para envio
+        // E aqui faremos algumas configurações pré-definidas que serão utilizadas em todas as nossas requisições
+        // como cookie, baseURI e etc para um conjunto de testes, em vez de deixarmos global como stamos fazendo
+        // lá em cima direto no objeto RestAssured
+
+        // Aqui apenas habilitaremos o log de tudo que enviaremos, esse log serve pra exibir as mensagens em nosso
+        // console quando enviarmos as requisições.
         reqBuilder.log(LogDetail.ALL);
+
+        // Após todas as especificações configuradas, temos que transformá-lo numa especificação de requisição de verdade
+        // para isso usamos o build().
         reqSpec = reqBuilder.build();
+        // Pronto, com isso criamos uma especificação de request que vai ser comum a todas as requisições.
+        // Agora vamos usá-lo em nossos testes.
+
 
         ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
         resBuilder.expectStatusCode(200);
@@ -50,7 +64,6 @@ public class UserXMLTest {
     public void devoTrabalharComXML(){
 
         given()
-
         .when()
                 .get("usersXML/3")
         .then()
