@@ -3,8 +3,10 @@ package br.com.rayanne.rest;
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
+import io.restassured.RestAssured;
 import io.restassured.internal.path.xml.NodeImpl;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -13,11 +15,22 @@ import java.util.Locale;
 
 public class UserXMLTest {
 
+    // É executado antes de todos os testes e classes. É necessário ser um método estático, conforme abaixo.
+    @BeforeClass
+    public static void setup(){
+        // Possibilidade de atributos estáticos
+        RestAssured.baseURI = "http://restapi.wcaquino.me";
+       // RestAssured.port = 80;
+       // RestAssured.basePath = "/v2";
+
+    }
+
     @Test
     public void devoTrabalharComXML(){
+
         given()
         .when()
-                .get("https://restapi.wcaquino.me/usersXML/3")
+                .get("usersXML/3")
         .then()
                 .statusCode(200)
                 .rootPath("user")
@@ -41,7 +54,7 @@ public class UserXMLTest {
     public void devoFazerPesquisasAvancadasComXML(){
         given()
         .when()
-                .get("https://restapi.wcaquino.me/usersXML")
+                .get("usersXML")
         .then()
                 .statusCode(200)
                 .body("users.user.size()", is(3)).body("users.user.findAll{it.age.toInteger() <= 25}.size()", is(2))
@@ -59,7 +72,7 @@ public class UserXMLTest {
     public void devoFazerPesquisasAvancadasComXMLEJava(){
         ArrayList<NodeImpl> nomes = given()
         .when()
-                .get("https://restapi.wcaquino.me/usersXML")
+                .get("usersXML")
         .then()
                 .statusCode(200)
                 .extract().path("users.user.name.findAll{it.toString().contains('n')}")
@@ -74,7 +87,7 @@ public class UserXMLTest {
     public void devoFazerPesquisasAvancadasComXPath(){
          given()
          .when()
-                .get("https://restapi.wcaquino.me/usersXML")
+                .get("usersXML")
          .then()
                  .statusCode(200)
                  .body(hasXPath("count(/users/user)", is ("3")))
