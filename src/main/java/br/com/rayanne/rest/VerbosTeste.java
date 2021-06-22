@@ -1,6 +1,7 @@
 package br.com.rayanne.rest;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -42,5 +43,23 @@ public class VerbosTeste {
 
         ;
     }
+
+    @Test
+    public void deveSalvarUsuarioViaXML() {
+        given()
+                .log().all()
+                .contentType(ContentType.XML)
+                .body("<user><name>Jose</name><age>50</age></user>")
+        .when()
+                .post("https://restapi.wcaquino.me/usersXML")
+        .then()
+                .log().all()
+                .statusCode(201)
+                .body("user.@id", is(notNullValue()))
+                .body("user.name", is("Jose"))
+                .body("user.age", is("50"))
+        ;
+    }
 }
+
 
