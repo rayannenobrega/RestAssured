@@ -1,10 +1,21 @@
 package br.com.rayanne.rest;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+
+@XmlRootElement(name="user") //Essa anotação garante que aquela primeira tag será <user>, sem essa anotação o sistema dá erro porque não sabe o que colocar.
+@XmlAccessorType(XmlAccessType.FIELD) // Pega todos os atributos e alguns gets que não estejam cobertos.
 public class User {
     private Long id;
     private String name;
     private Integer age;
     private Double salary;
+
+    public User(){
+        //Criado porque ao rodar o teste 'deveSalvarUsuarioViaXMLUsandoObjeto' ele reclamou que não tinha um construtor criado sem argumentos.
+    }
 
     public User(String name, Integer age) {
         this.name = name;

@@ -199,6 +199,7 @@ public class VerbosTeste {
 
         User user = new User ("Usuario deserializado", 35);
 
+        //Importante lembrar que como é um teste encadeado é necessário guardar a variável desde cima.
         User usuarioInserido = given()
                 .log().all()
                 .contentType("application/json")
@@ -214,6 +215,26 @@ public class VerbosTeste {
         Assert.assertEquals("Usuario deserializado", usuarioInserido.getName());
         Assert.assertThat(usuarioInserido.getAge(), is(35));
         Assert.assertThat(usuarioInserido.getId(), notNullValue());
+    }
+
+    @Test
+    public void deveSalvarUsuarioViaXMLUsandoObjeto() {
+
+        User user = new User("Usuario XML", 40);
+
+        given()
+                .log().all()
+                .contentType(ContentType.XML)
+                .body(user)
+       .when()
+                .post("https://restapi.wcaquino.me/usersXML")
+       .then()
+                .log().all()
+                .statusCode(201)
+                .body("user.@id", is(notNullValue()))
+                .body("user.name", is("Usuario XML"))
+                .body("user.age", is("40"))
+        ;
     }
 }
 
