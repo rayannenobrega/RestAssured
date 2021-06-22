@@ -5,6 +5,9 @@ import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
 
@@ -139,6 +142,52 @@ public class VerbosTeste {
                 .log().all()
                 .statusCode(400)
                 .body("error",is("Registro inexistente"))
+        ;
+    }
+
+    @Test
+    public void deveSalvarUsuarioUsandoMap() {
+        //um map é como se fosse uma lista, só que ele armazena pares
+        //É necessário incluir no POM a biblioteca GSON, ou ele dirá que não encontrou o objeto devido a não serialização no JSON.
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("name", "Usuario via map");
+        params.put("age", 25);
+
+        given()
+                .log().all()
+                .contentType("application/json")
+                .body(params) //O rest entende que por estar enviando pares de chaves e valor e contentType acima dizendo que ele é um JSON ele faz a conversão sozinho.
+        .when()
+                .post("https://restapi.wcaquino.me/users")
+        .then()
+                .log().all()
+                .statusCode(201)
+                .body("id", is(notNullValue()))
+                .body("name", is("Usuario via map"))
+                .body("age", is(25))
+        ;
+    }
+
+    @Test
+    public void deveSalvarUsuarioUsandoObjeto() {
+        //Foi criada uma nova classe User para realizar esse teste, onde ele tem todos os gets e sets e o construtor padrão com name e age.
+        // O objeto é instaciado, passando os parâmetros necessários pedidos pelo construtor.
+
+        User user = new User ("Usuario via objeto", 35);
+
+        given()
+                .log().all()
+                .contentType("application/json")
+                .body(user)
+        .when()
+                .post("https://restapi.wcaquino.me/users")
+        .then()
+                .log().all()
+                .statusCode(201)
+                .body("id", is(notNullValue()))
+                .body("name", is("Usuario via objeto"))
+                .body("age", is(35))
         ;
     }
 }
