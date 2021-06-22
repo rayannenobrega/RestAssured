@@ -96,6 +96,7 @@ public class VerbosTeste {
                 .body("salary", is(1234.5678f))
         ;
     }
+
     @Test
     public void devoCustomizarURLParte2() {
         given()
@@ -113,6 +114,31 @@ public class VerbosTeste {
                 .body("name", is("Usuario alterado"))
                 .body("age", is(80))
                 .body("salary", is(1234.5678f))
+        ;
+    }
+
+    @Test
+    public void deveRomoverUsuario(){
+        given()
+                .log().all()
+        .when()
+                .delete("https://restapi.wcaquino.me/users/1")
+        .then()
+                .log().all()
+                .statusCode(204)
+        ;
+    }
+
+    @Test
+    public void naoDeveRomoverUsuarioInexistente(){
+        given()
+                .log().all()
+        .when()
+                .delete("https://restapi.wcaquino.me/users/1000")
+        .then()
+                .log().all()
+                .statusCode(400)
+                .body("error",is("Registro inexistente"))
         ;
     }
 }
