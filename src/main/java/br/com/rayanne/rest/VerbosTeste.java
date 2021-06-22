@@ -3,6 +3,7 @@ package br.com.rayanne.rest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -173,6 +174,7 @@ public class VerbosTeste {
     public void deveSalvarUsuarioUsandoObjeto() {
         //Foi criada uma nova classe User para realizar esse teste, onde ele tem todos os gets e sets e o construtor padrão com name e age.
         // O objeto é instaciado, passando os parâmetros necessários pedidos pelo construtor.
+        //Pode parecer complicado criar um objeto somente pra usá-lo aqui, mas provavelmente esse objeto já existe em uma aplicação real, então podemos reaproveitá-la aqui.
 
         User user = new User ("Usuario via objeto", 35);
 
@@ -189,6 +191,29 @@ public class VerbosTeste {
                 .body("name", is("Usuario via objeto"))
                 .body("age", is(35))
         ;
+    }
+
+    @Test
+    public void deveDeserializarObjetoAoSalvarUsuario() {
+        //convertendo o JSON que volta da nossa requisição em um objeto
+
+        User user = new User ("Usuario deserializado", 35);
+
+        User usuarioInserido = given()
+                .log().all()
+                .contentType("application/json")
+                .body(user)
+        .when()
+                .post("https://restapi.wcaquino.me/users")
+        .then()
+                .log().all()
+                .statusCode(201)
+                .extract().body().as(User.class)
+        ;
+        System.out.println(usuarioInserido);
+        Assert.assertEquals("Usuario deserializado", usuarioInserido.getName());
+        Assert.assertThat(usuarioInserido.getAge(), is(35));
+        Assert.assertThat(usuarioInserido.getId(), notNullValue());
     }
 }
 
