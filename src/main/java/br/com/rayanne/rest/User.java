@@ -1,13 +1,12 @@
 package br.com.rayanne.rest;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 
 @XmlRootElement(name="user") //Essa anotação garante que aquela primeira tag será <user>, sem essa anotação o sistema dá erro porque não sabe o que colocar.
 @XmlAccessorType(XmlAccessType.FIELD) // Pega todos os atributos e alguns gets que não estejam cobertos.
 public class User {
+    @XmlAttribute    //Se eu não informar por essa anotação que o ID é um atributo ele aparecerá como "null" quando rodamos XML.
     private Long id;
     private String name;
     private Integer age;
