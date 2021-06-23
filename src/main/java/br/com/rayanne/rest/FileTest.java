@@ -71,6 +71,8 @@ public class FileTest {
                 .extract().asByteArray();
         ;
 
+
+        //Essa linha de código converte a imagem recebida em byte e conseguimos baixar ela nos resources.
         File imagem = new File("src/main/resources/file.jpg");
         OutputStream out = new FileOutputStream(imagem);
         out.write(image);
