@@ -1,8 +1,12 @@
 package br.com.rayanne.rest;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 import static org.hamcrest.Matchers.*;
@@ -100,6 +104,48 @@ public class AuthTest {
                 .statusCode(200)
                 .body("status", is("logado"))
 
+        ;
+
+    }
+
+    @Test
+    public void deveFazerAutenticacaoComTokenJWT(){
+        //O Token JWT é um método muito utilizado hoje em dia onde é passado um token para termos acesso as informações da API. O passo-a-passo estará abaixo.
+        //Aula 50 (Seção 11: Autenticações)
+
+        //fazendo um MAP para passar as informações no body.
+        Map<String, String> login = new HashMap<String, String>();
+        login.put("email", "rayanne@email");
+        login.put("senha", "casa123");
+
+        //Login na API e Receber o Token
+
+       String token = given()
+                .log().all()
+                .body(login) //É possível passar em String mas utilizaremos o MAP para melhor organização
+                .contentType(ContentType.JSON) //O rest precisa saber qual é o tipo da requisição que estamos enviando, nesse caso é um JSON.
+        .when()
+                .post("https://barrigarest.wcaquino.me/signin")//Para passar os parametros é necessário passar no body, portanto o método aqui é o POST.
+        .then()
+                .log().all()
+                .statusCode(200)
+                .extract().path("token")//O Token aparece após rodar esse teste, no terminal de RUN. "id:" "nome" "token: (esse é o código que queremos)".
+                //conseguimos extrair o token e salvar em uma string através do comando extract().path("token")
+        ;
+
+        //Obter as contas
+
+        //enviamos o token através do cabeçalho, que é uma forma de enviar dados em uma requisição.
+
+        given()
+                .log().all()
+                .header("Authorization", "JWT " + token) // escreve "JWT " com um ESPAÇO e depois concatena (+) com o token que recebemos acima e guardamos na variável token.
+        .when()
+                .get("https://barrigarest.wcaquino.me/contas")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .body("nome", hasItem("Conta de teste")) //não se usa IS porque tem uma coleção de contas.
         ;
 
     }
