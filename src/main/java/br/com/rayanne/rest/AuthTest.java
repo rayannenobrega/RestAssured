@@ -2,6 +2,7 @@ package br.com.rayanne.rest;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.path.xml.XmlPath;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -17,9 +18,9 @@ public class AuthTest {
     public void deveAcessarSWAPI(){
         given()
                 .log().all()
-                .when()
+        .when()
                 .get("https://swapi.dev/api/people/1/")
-                .then()
+        .then()
                 .log().all()
                 .statusCode(200)
                 .body("name", is("Luke Skywalker"))
@@ -120,7 +121,7 @@ public class AuthTest {
 
         //Login na API e Receber o Token
 
-       String token = given()
+        String token = given()
                 .log().all()
                 .body(login) //É possível passar em String mas utilizaremos o MAP para melhor organização
                 .contentType(ContentType.JSON) //O rest precisa saber qual é o tipo da requisição que estamos enviando, nesse caso é um JSON.
@@ -148,6 +149,44 @@ public class AuthTest {
                 .body("nome", hasItem("Conta de teste")) //não se usa IS porque tem uma coleção de contas.
         ;
 
+    }
+
+    @Test
+    public void deveAcessarAplicacaoWeb(){
+        //login
+        String cookie = given()
+                .log().all()
+                .formParam("email", "rayanne@email")
+                .formParam("senha", "casa123")
+                .contentType(ContentType.URLENC.withCharset("UTF-8"))
+        .when()
+                .post("https://seubarriga.wcaquino.me/logar")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .extract().header("set-cookie")
+        ;
+
+        //extraindo as chave do cookie que é o que garante que estamos logados.
+        cookie = cookie.split("=")[1].split(";")[0];
+        System.out.println(cookie);
+
+        //obter conta
+
+         String body = given()
+                .log().all()
+                 .cookie("connect.sid", cookie) //outra forma de enviar dados
+         .when()
+                .get("https://seubarriga.wcaquino.me/contas")
+         .then()
+                .log().all()
+                .statusCode(200)
+                 .body("html.body.table.tbody.tr[0].td[0]", is("Conta de teste"))
+                 .extract().body().asString()
+         ;
+
+         XmlPath xmlPath = new XmlPath(XmlPath.CompatibilityMode.HTML, body);
+         System.out.println(xmlPath.getString("html.body.table.tbody.tr[0].td[0]"));
     }
 }
 
